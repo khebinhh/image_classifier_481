@@ -53,8 +53,8 @@ def load_images_and_annotations(image_paths, annotation_paths, batch_size=10):
     return images, annotations
 
 # Example usage
-image_base_path = 'C:/Users/arin/Desktop/DogBreeds/Images'
-annotation_base_path = 'C:/Users/arin/Desktop/DogBreeds/Annotation'
+image_base_path = 'D:/DogBreeds/Images'
+annotation_base_path = 'D:/DogBreeds/Annotation'
 
 # Get all image and annotation file paths
 image_paths, annotation_paths = load_images_and_annotations(image_base_path, annotation_base_path)
@@ -179,8 +179,8 @@ def get_image_and_annotation_paths(image_base_path, annotation_base_path):
     return image_paths, annotation_paths
 
 # Example usage
-image_base_path = 'C:/Users/arin/Desktop/DogBreeds/Images'
-annotation_base_path = 'C:/Users/arin/Desktop/DogBreeds/Annotation'
+image_base_path = 'D:/DogBreeds/Images'
+annotation_base_path = 'D:/DogBreeds/Annotation'
 
 # Get all image and annotation file paths
 image_paths, annotation_paths = get_image_and_annotation_paths(image_base_path, annotation_base_path)

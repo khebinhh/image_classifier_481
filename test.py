@@ -1,34 +1,93 @@
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
-import numpy as np
 import tensorflow as tf
-import sys
+import numpy as np
+import cv2
+import os
+from tensorflow.keras.models import load_model
 
-# Load pre-trained VGG16 model
-model = VGG16(weights='imagenet')
+# Load the model
+model = load_model('D:/DogBreeds/dog_breed_classifier.h5')
 
-# Load the image passed as a command-line argument
-img_path = sys.argv[1]
+# Print model input shape
+print(f"Model input shape: {model.input_shape}")
 
-# Load the image with the target size of 224x224 (expected input size for VGG16)
-img = image.load_img(img_path, target_size=(224, 224))
+# Load breed labels from the folders in the "Annotation" directory
+breed_labels = [
+    "n02113023-Pembroke", "n02085782-Japanese_spaniel", "n02085936-Maltese_dog", 
+    "n02086079-Pekinese", "n02086240-Shih-Tzu", "n02086646-Blenheim_spaniel", 
+    "n02106550-Rottweiler", "n02087046-toy_terrier", "n02087394-Rhodesian_ridgeback", 
+    "n02088094-Afghan_hound", "n02088238-basset", "n02088364-beagle", "n02088466-bloodhound", 
+    "n02088632-bluetick", "n02089078-black-and-tan_coonhound", "n02089867-Walker_hound", 
+    "n02089973-English_foxhound", "n02090379-redbone", "n02090622-borzoi", "n02090721-Irish_wolfhound", 
+    "n02091032-Italian_greyhound", "n02091134-whippet", "n02085620-Chihuahua", 
+    "n02091467-Norwegian_elkhound", "n02091635-otterhound", "n02091831-Saluki", 
+    "n02092002-Scottish_deerhound", "n02092339-Weimaraner", "n02093256-Staffordshire_bullterrier", 
+    "n02093428-American_Staffordshire_terrier", "n02093647-Bedlington_terrier", 
+    "n02093754-Border_terrier", "n02093859-Kerry_blue_terrier", "n02093991-Irish_terrier", 
+    "n02094114-Norfolk_terrier", "n02094258-Norwich_terrier", "n02094433-Yorkshire_terrier", 
+    "n02095314-wire-haired_fox_terrier", "n02116738-African_hunting_dog", "n02091244-Ibizan_hound", 
+    "n02096051-Airedale", "n02096177-cairn", "n02096294-Australian_terrier", "n02096437-Dandie_Dinmont", 
+    "n02096585-Boston_bull", "n02097047-miniature_schnauzer", "n02097130-giant_schnauzer", 
+    "n02097209-standard_schnauzer", "n02097298-Scotch_terrier", "n02097474-Tibetan_terrier", 
+    "n02097658-silky_terrier", "n02098105-soft-coated_wheaten_terrier", "n02098286-West_Highland_white_terrier", 
+    "n02098413-Lhasa", "n02099267-flat-coated_retriever", "n02099429-curly-coated_retriever", 
+    "n02099601-golden_retriever", "n02099712-Labrador_retriever", "n02099849-Chesapeake_Bay_retriever", 
+    "n02100236-German_short-haired_pointer", "n02100583-vizsla", "n02100735-English_setter", 
+    "n02100877-Irish_setter", "n02095570-Lakeland_terrier", "n02101388-Brittany_spaniel", 
+    "n02101556-clumber", "n02102040-English_springer", "n02102177-Welsh_springer_spaniel", 
+    "n02102318-cocker_spaniel", "n02102480-Sussex_spaniel", "n02102973-Irish_water_spaniel", 
+    "n02104029-kuvasz", "n02104365-schipperke", "n02105056-groenendael", "n02105162-malinois", 
+    "n02105251-briard", "n02105412-kelpie", "n02105505-komondor", "n02105641-Old_English_sheepdog", 
+    "n02105855-Shetland_sheepdog", "n02106030-collie", "n02106166-Border_collie", 
+    "n02106382-Bouvier_des_Flandres", "n02101006-Gordon_setter", "n02106662-German_shepherd", 
+    "n02107142-Doberman", "n02107312-miniature_pinscher", "n02107574-Greater_Swiss_Mountain_dog", 
+    "n02107683-Bernese_mountain_dog", "n02107908-Appenzeller", "n02108000-EntleBucher", 
+    "n02108089-boxer", "n02108422-bull_mastiff", "n02108551-Tibetan_mastiff", "n02108915-French_bulldog", 
+    "n02109047-Great_Dane", "n02109525-Saint_Bernard", "n02109961-Eskimo_dog", "n02110063-malamute", 
+    "n02110185-Siberian_husky", "n02110627-affenpinscher", "n02110806-basenji", "n02110958-pug", 
+    "n02111129-Leonberg", "n02111277-Newfoundland", "n02111500-Great_Pyrenees", "n02111889-Samoyed", 
+    "n02112018-Pomeranian", "n02112137-chow", "n02112350-keeshond", "n02112706-Brabancon_griffon", 
+    "n02113978-Mexican_hairless", "n02113186-Cardigan", "n02113624-toy_poodle", "n02113712-miniature_poodle", 
+    "n02113799-standard_poodle", "n02086910-papillon", "n02115641-dingo", "n02115913-dhole", 
+    "n02095889-Sealyham_terrier"
+]
 
-# Convert the image to a numpy array
-img_array = image.img_to_array(img)
+print(breed_labels)
 
-# Expand dimensions to match the batch size (1, 224, 224, 3)
-img_array = np.expand_dims(img_array, axis=0)
+# Function to load and process the image
+def prepare_image(img_path):
+    # Load the image using OpenCV
+    img = cv2.imread(img_path)
+    
+    # Resize the image to (128, 128), as expected by the model
+    img = cv2.resize(img, (128, 128))
 
-# Preprocess the image for the VGG16 model
-img_array = preprocess_input(img_array)
+    # Convert the image to RGB (OpenCV loads images in BGR by default)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-# Perform prediction
-predictions = model.predict(img_array)
+    # Expand dimensions to match the input format of the model (batch size, height, width, channels)
+    img_array = np.expand_dims(img, axis=0)
+    
+    # Normalize the image
+    img_array = img_array / 255.0
 
-# Decode the predictions
-decoded_predictions = decode_predictions(predictions, top=5)[0]
+    return img_array
 
-# Print the top 5 predictions with their confidence scores
-print("Top 5 Predicted Dog Breeds:")
-for i, (imagenet_id, label, score) in enumerate(decoded_predictions):
-    print(f"{i + 1}: {label} ({score * 100:.2f}%)")
+# Get the image path from the command line argument
+img_path = 'D:/DogBreeds/' + ' '.join(os.sys.argv[1:])
+
+# Process the image
+img_array = prepare_image(img_path)
+
+# Make a prediction
+try:
+    predictions = model.predict(img_array)
+    
+    # Get the index of the highest probability
+    predicted_class_idx = np.argmax(predictions)
+
+    # Get the breed label corresponding to the predicted class index
+    predicted_breed = breed_labels[predicted_class_idx]
+    
+    print(f"Predicted Dog Breed: {predicted_breed} ({predictions[0][predicted_class_idx]*100:.2f}%)")
+except Exception as e:
+    print(f"Error processing the image: {e}")

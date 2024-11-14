@@ -116,8 +116,8 @@ def build_model(num_classes):
     return model
 
 if __name__ == "__main__":
-    images_dir = 'C:/Users/arin/Desktop/DogBreeds/Images'
-    annotations_dir = 'C:/Users/arin/Desktop/DogBreeds/Annotation'
+    images_dir = 'D:/DogBreeds/Images'
+    annotations_dir = 'D:/DogBreeds/Annotation'
     
     # Get all image and annotation file paths
     image_paths, annotation_paths = get_image_and_annotation_paths(images_dir, annotations_dir)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     model.fit(
         train_images, 
         train_labels, 
-        epochs=10, 
+        epochs=16, 
         steps_per_epoch=steps_per_epoch, 
         validation_data=(val_images, val_labels), 
         validation_steps=validation_steps
