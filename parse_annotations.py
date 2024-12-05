@@ -52,9 +52,10 @@ def load_images_and_annotations(image_paths, annotation_paths, batch_size=10):
     print(f"Skipped {skipped_files} files due to errors.")
     return images, annotations
 
-# Example usage
-image_base_path = 'D:/DogBreeds/Images'
-annotation_base_path = 'D:/DogBreeds/Annotation'
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+image_base_path = os.path.join(script_dir, 'Images')
+annotation_base_path = os.path.join(script_dir, 'Annotation')
 
 # Get all image and annotation file paths
 image_paths, annotation_paths = load_images_and_annotations(image_base_path, annotation_base_path)
@@ -178,9 +179,12 @@ def get_image_and_annotation_paths(image_base_path, annotation_base_path):
     print(f"Found {len(image_paths)} images and {len(annotation_paths)} annotations.")
     return image_paths, annotation_paths
 
-# Example usage
-image_base_path = 'D:/DogBreeds/Images'
-annotation_base_path = 'D:/DogBreeds/Annotation'
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct paths relative to the "DogBreeds" directory
+base_dir = os.path.join(script_dir, 'DogBreeds')
+image_base_path = os.path.join(script_dir, 'Images')
+annotation_base_path = os.path.join(script_dir, 'Annotation')
 
 # Get all image and annotation file paths
 image_paths, annotation_paths = get_image_and_annotation_paths(image_base_path, annotation_base_path)
