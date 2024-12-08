@@ -77,6 +77,18 @@
                     } else {
                         const topBreed = result.top_breeds[0].breed;
                         const referenceImagePath = `/static/breed_images/${topBreed}.jpg`;
+                        // Check if the reference image file exists
+                        fetch(referenceImagePath)
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log(`Reference image found for ${topBreed}`);
+                                } else {
+                                    console.warn(`Reference image NOT found for ${topBreed}`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error(`Error loading reference image for ${topBreed}: ${error}`);
+                            });
                         const topBreedsHTML = result.top_breeds.map((breedInfo, index) => {
                             const formattedBreedName = breedInfo.breed.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
                             return `
