@@ -23,7 +23,9 @@
     <div id="results"></div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        
+        
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const formData = new FormData(e.target);
@@ -76,18 +78,19 @@
                         predictionDiv.textContent = `Error for ${result.filename}: ${result.error}`;
                     } else {
                         const topBreed = result.top_breeds[0].breed;
+                        const formattedReferenceBreedName = topBreed.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
                         const referenceImagePath = `/static/breed_images/${topBreed}.jpg`;
                         // Check if the reference image file exists
                         fetch(referenceImagePath)
                             .then(response => {
                                 if (response.ok) {
-                                    console.log(`Reference image found for ${topBreed}`);
+                                    console.log(`Reference image found for ${formattedReferenceBreedName}`);
                                 } else {
-                                    console.warn(`Reference image NOT found for ${topBreed}`);
+                                    console.warn(`Reference image NOT found for ${formattedReferenceBreedName}`);
                                 }
                             })
                             .catch(error => {
-                                console.error(`Error loading reference image for ${topBreed}: ${error}`);
+                                console.error(`Error loading reference image for ${formattedReferenceBreedName}: ${error}`);
                             });
                         const topBreedsHTML = result.top_breeds.map((breedInfo, index) => {
                             const formattedBreedName = breedInfo.breed.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());

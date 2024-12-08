@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import tensorflow as tf
 import numpy as np
-from PIL import Image
+from PIL import Image, ExifTags
 import os
 import json
 import base64
@@ -21,6 +21,23 @@ def preprocess_image(image):
     image = np.expand_dims(image, axis=0)
     return image
 
+def correct_image_orientation(image):
+    try:
+        exif = image._getexif()
+        if exif is not None:
+            for tag, value in exif.items():
+                decoded = ExifTags.TAGS.get(tag, tag)
+                if decoded == 'Orientation':
+                    if value == 3:
+                        image = image.rotate(180, expand=True)
+                    elif value == 6:
+                        image = image.rotate(270, expand=True)
+                    elif value == 8:
+                        image = image.rotate(90, expand=True)
+    except Exception as e:
+        print(f"Error adjusting orientation: {e}")
+    return image
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -33,6 +50,8 @@ def predict():
     for file in uploaded_files:
         try:
             image = Image.open(file.stream)
+            # Correct orientation
+            image = correct_image_orientation(image)
             preprocessed = preprocess_image(image)
             predictions = model.predict(preprocessed)[0]
             
