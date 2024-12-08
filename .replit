@@ -1,3 +1,11 @@
-modules = ["python-base-3.13"]
+modules = ["python-3.12", "web"]
 [nix]
 channel = "stable-24_05"
+run = "flask run --host=0.0.0.0 -- port=3000"
+
+[env]
+FLASK_APP = "app.py"
+
+[[ports]]
+localPort = 3000
+externalPort = 80

@@ -7,7 +7,7 @@ import json
 import base64
 from io import BytesIO
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Load model and mappings
 model = tf.keras.models.load_model('saved_model/dog_breed_classifier.keras')
@@ -59,4 +59,4 @@ def predict():
     return jsonify({'results': results})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', port=3000)

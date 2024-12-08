@@ -33,6 +33,11 @@
             const uploadProgressContainer = document.getElementById('uploadProgressContainer');
             const resultsDiv = document.getElementById('results');
 
+            // Initialize a list for previous results if it doesn't exist
+            if (!window.previousResults) {
+                window.previousResults = [];
+            }
+
             // Show the progress bar container
             uploadProgressContainer.style.display = 'block';
 
@@ -61,44 +66,37 @@
                 const responseData = JSON.parse(data);
                 resultsDiv.innerHTML = ''; // Clear previous results
 
-                if (responseData.results) {
-                    responseData.results.forEach(result => {
-                        const predictionDiv = document.createElement('div');
-                        predictionDiv.className = 'prediction';
-
-                        if (result.error) {
-                            predictionDiv.textContent = `Error for ${result.filename}: ${result.error}`;
-                        } else {
-                            const topBreedsHTML = result.top_breeds.map((breedInfo, index) => {
-                                if (index === 0) {
-                                    return `
-                                        <li class="top-breed">
-                                            ${breedInfo.breed}: ${(breedInfo.probability * 100).toFixed(2)}%
-                                        </li>
-                                    `;
-                                }
-                                return `
-                                    <li>
-                                        ${breedInfo.breed}: ${(breedInfo.probability * 100).toFixed(2)}%
-                                    </li>
-                                `;
-                            }).join('');
-
-                            predictionDiv.innerHTML = `
-                                <h3>${result.filename}</h3>
-                                <p><strong>Top Predictions:</strong></p>
-                                <ul>
-                                    ${topBreedsHTML}
-                                </ul>
-                                <img src="data:image/jpeg;base64,${result.image}" alt="${result.filename}">
+    // Append new results to previousResults
+                window.previousResults.push(...responseData.results);
+                // Render all results: new + previous
+                window.previousResults.forEach(result => {
+                    const predictionDiv = document.createElement('div');
+                    predictionDiv.className = 'prediction';
+    if (result.error) {
+                        predictionDiv.textContent = `Error for ${result.filename}: ${result.error}`;
+                    } else {
+                        const topBreed = result.top_breeds[0].breed;
+                        const referenceImagePath = `/static/breed_images/${topBreed}.jpg`;
+                        const topBreedsHTML = result.top_breeds.map((breedInfo, index) => {
+                            const formattedBreedName = breedInfo.breed.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                            return `
+                                <li${index === 0 ? ' class="top-breed"' : ''}>
+                                    ${formattedBreedName}: ${(breedInfo.probability * 100).toFixed(2)}%
+                                </li>
                             `;
-                        }
-                        resultsDiv.appendChild(predictionDiv);
-                    });
-                }
+                        }).join('');
+                        predictionDiv.innerHTML = `
+                            <p><strong>Top Predictions:</strong></p>
+                            <ul>${topBreedsHTML}</ul>
+                            <img src="data:image/jpeg;base64,${result.image}" alt="${result.filename}" class="uploaded-img">
+                            <h3>${result.filename}</h3>
+                            <p><strong>Reference Image for ${topBreed.replace(/_/g, ' ')}:</strong></p>
+                            <img src="${referenceImagePath}" alt="Reference Image" class="reference-img">
+                        `;
+                    }
+                    resultsDiv.appendChild(predictionDiv);
+                });
             };
-
-            // Prepare and send the request
             xhr.open('POST', '/predict');
             xhr.send(formData);
         });

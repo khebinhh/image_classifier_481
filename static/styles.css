@@ -41,6 +41,19 @@ button:hover {
     background-color: #357abd;
 }
 
+#uploadProgressContainer {
+    display: none; /* Initially hidden */
+    text-align: center;
+    margin: 20px auto;
+    width: 80%; /* Width of the progress bar container */
+    max-width: 600px; /* Maximum width */
+}
+
+progress {
+    width: 100%;
+    margin-top: 10px;
+}
+
 /* New section for top 5 breeds */
 #topBreeds {
     display: inline-block;
@@ -86,33 +99,92 @@ button:hover {
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: space-between;
+    width: 100%; /* Full width within the grid */
+    max-width: 400px; /* Ensures a consistent max width */
+    box-sizing: border-box;
 }
 
-.prediction h3 {
-    margin: 10px 0;
+.prediction p {
+    margin: 0;
+    font-weight: bold;
 }
 
-ul {
+.prediction ul {
     list-style: none;
     padding: 0;
+    margin: 10px 0;
+    min-height: 80px; /* Placeholder to maintain consistent height */
 }
 
-ul li {
+.prediction {
+    padding: 15px;
+    background-color: #e6f7ff;
+    border-left: 5px solid #4a90e2;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    min-height: 350px; /* Ensures a minimum height */
+}
+.prediction p {
+    margin: 0;
+    font-weight: bold;
+}
+.prediction ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    min-height: 80px;
+}
+.prediction li {
     margin-bottom: 5px;
 }
-
 .top-breed {
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: 8px;
 }
-
-#results img {
+.prediction img {
     max-width: 100%;
-    height: auto;
+    height: 200px; /* Defines a fixed height for the image */
     border-radius: 5px;
+    object-fit: cover; /* Maintain aspect ratio and cover the container */
     margin-top: 10px;
-    object-fit: cover;
 }
+.prediction h3 {
+    margin: 10px 0;
+    text-align: center;
+    font-size: 1em;
+}
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 100%;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+<style>
+  .image-container {
+    width: 100%; /* Adjust width as needed */
+    position: relative;
+    overflow: hidden; /* Hide overflow */
+    padding-top: 75%; /* 4:3 Aspect Ratio, adjust as needed */
+  }
+
+  .image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Fit the image within the container, maintaining aspect ratio */
+  }
+</style>
